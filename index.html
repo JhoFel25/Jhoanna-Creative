@@ -169,7 +169,7 @@ nav{transition:box-shadow .3s}nav.sc{box-shadow:0 6px 20px rgba(0,0,0,.2)}
 <div class="eye" style="text-align:center">Investment</div><h2 style="text-align:center">Web design &amp; automation packages</h2>
 <p class="sub" style="margin-inline:auto;text-align:center">Choose your design tier, compare hosting options and build an instant estimate. Prices are shown in pesos or dollars.</p>
 <div class="tabs" id="pr-cur"><button aria-selected="true" data-v="PHP">₱ PHP</button><button aria-selected="false" data-v="USD">$ USD</button></div>
-<div class="tabs" id="pr-host"><button aria-selected="true" data-v="A">Option A: Free hosting<small>GitHub Pages / Vercel ($0/mo)</small></button><button aria-selected="false" data-v="B">Option B: Managed hosting<small>Custom domain (.com/.ph) + cloud</small></button></div>
+<div class="tabs" id="pr-host"><button aria-selected="true" data-v="A">Option A: Free hosting<small>GitHub Pages / Cloudflare ($0/mo)</small></button><button aria-selected="false" data-v="B">Option B: Managed hosting<small>Custom domain (.com/.ph) + cloud</small></button></div>
 <div class="g g3" style="margin-top:34px">
 <div class="c pk" data-p="1"><div><div class="lv">Essential</div><h3>Starter Landing Page</h3><p>Perfect for single-service promos, personal portfolios or startup splash pages that need quick deployment and high conversion.</p><div class="pc" data-pc></div><div class="nt" data-nt></div></div>
 <ul><li>Single-page responsive design</li><li>Modern UI with dark/light palette</li><li>Basic lead contact form</li><li>Mobile and speed optimization</li><li>1 round of revision included</li></ul><button class="btn o" data-sel></button></div>
@@ -180,8 +180,8 @@ nav{transition:box-shadow .3s}nav.sc{box-shadow:0 6px 20px rgba(0,0,0,.2)}
 </div>
 <h3 style="text-align:center;margin:56px 0 6px;font-size:32px">Compare hosting and domain options</h3>
 <p class="small" style="text-align:center;margin:0 0 18px">Understand the differences between Option A and Option B before you decide.</p>
-<div class="tw"><table><thead><tr><th>Feature</th><th>Option A: Free hosting<small>GitHub Pages / Vercel tier</small></th><th>Option B: Managed hosting<small>Custom domain + cloud server</small></th></tr></thead><tbody>
-<tr><td>Web address (domain URL)</td><td>brand.github.io or brand.vercel.app</td><td>yourcompany.com or .ph</td></tr>
+<div class="tw"><table><thead><tr><th>Feature</th><th>Option A: Free hosting<small>GitHub Pages / Cloudflare tier</small></th><th>Option B: Managed hosting<small>Custom domain + cloud server</small></th></tr></thead><tbody>
+<tr><td>Web address (domain URL)</td><td>brand.github.io or brand.Cloudflare.app</td><td>yourcompany.com or .ph</td></tr>
 <tr><td>SSL security certificate</td><td>Included free (HTTPS)</td><td>Included free (custom HTTPS)</td></tr>
 <tr><td>Monthly server costs</td><td>$0 / month (free)</td><td>Included in annual renewal fee</td></tr>
 <tr><td>Annual renewal cost</td><td>$0 / year</td><td id="pr-ren"></td></tr>
@@ -298,7 +298,7 @@ Q("#pr-ren").textContent="~ "+f(sel[3])+" / year";
 let up=host==="A"?sel[1]:sel[2],mo=0;const names=[];
 ad.forEach(i=>{const a=c.a[i];names.push(a[0]+" (+"+f(a[1])+(a[2]?"/mo":"")+")");if(a[2])mo+=a[1];else up+=a[1]});
 Q("#q-pk").textContent=sel[0];Q("#q-pkp").textContent=f(host==="A"?sel[1]:sel[2]);
-Q("#q-h").textContent=host==="A"?"Option A: Free cloud hosting (GitHub/Vercel)":"Option B: Managed domain & cloud server";Q("#q-hp").textContent=host==="A"?f(0):"Included";
+Q("#q-h").textContent=host==="A"?"Option A: Free cloud hosting (GitHub/Cloudflare)":"Option B: Managed domain & cloud server";Q("#q-hp").textContent=host==="A"?f(0):"Included";
 Q("#q-ad").innerHTML=names.length?names.map(n=>"<div>• "+n+"</div>").join(""):"<i>No add-ons selected</i>";
 Q("#q-t").textContent=f(up);Q("#q-m").textContent=mo?"Plus "+f(mo)+" / month (maintenance)":"";
 const rn=host==="B"?sel[3]:0;Q("#q-r").textContent="Annual domain/hosting renewal: "+f(rn)+" / yr";
