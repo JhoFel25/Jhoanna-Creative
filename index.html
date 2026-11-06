@@ -501,21 +501,35 @@ $("wd").addEventListener("close",()=>{$("wx").innerHTML=""});
 {const v=$("v3"),m=v.nextElementSibling;v.addEventListener("error",()=>{m.textContent="Video unavailable.";m.style.display="block"});new IntersectionObserver(es=>es.forEach(x=>{if(!x.isIntersecting)v.pause()}),{threshold:.2}).observe(v)}
 
 /* reviews: edit this list to publish real client reviews. Set sample:false (or remove it) to hide the "Sample" tag. */
-(()=>{const REVIEWS=[
+(()=>{const SAMPLES=[
 {n:"Sample review",b:"Jewelry brand",r:5,t:"The logo and brand guide made our whole shop look more premium. Everything finally feels consistent.",sample:true},
 {n:"Sample review",b:"Café owner",r:5,t:"Our new website is clean, fast and easy for customers to book from. Communication was clear all the way.",sample:true},
 {n:"Sample review",b:"Beauty studio",r:5,t:"The social media templates saved me hours every week and our feed looks polished and on-brand.",sample:true}];
 const esc=x=>String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const g=$("rvw");g.innerHTML=REVIEWS.map(v=>`<div class="c rc rv"><div class="stars" aria-label="${v.r} out of 5 stars">${"★".repeat(v.r)}${"☆".repeat(5-v.r)}</div>${v.sample?'<span class="smp">Sample</span>':""}<q>${esc(v.t)}</q><div class="who"><b>${esc(v.n)}</b>${esc(v.b||"")}</div></div>`).join("");
-g.querySelectorAll(".rv").forEach(e=>{e.classList.add("in")});
-const E="jhoannacreativeco@gmail.com",d=$("rf");
+const W3="edc0599b-4404-49d1-bf32-1d596554dcef",FK="AIzaSyARRkABjdzn9elqGBbe87KSbANPgnsGZwk",BASE="https://firestore.googleapis.com/v1/projects/user-login-6aa00/databases/(default)/documents";
+const g=$("rvw"),d=$("rf");let live=[];
+const card=v=>`<div class="c rc rv in"><div class="stars" aria-label="${v.r} out of 5 stars">${"★".repeat(v.r)}${"☆".repeat(5-v.r)}</div>${v.sample?'<span class="smp">Sample</span>':""}<q>${esc(v.t)}</q><div class="who"><b>${esc(v.n)}</b>${esc(v.b||"")}</div></div>`;
+const draw=()=>{const l=live.slice(0,9);g.innerHTML=l.concat(SAMPLES.slice(0,Math.max(0,3-l.length))).map(card).join("")};
+draw();
+(async()=>{try{const r=await fetch(BASE+":runQuery?key="+FK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({structuredQuery:{from:[{collectionId:"reviews"}],orderBy:[{field:{fieldPath:"createdAt"},direction:"DESCENDING"}],limit:12}})});const j=await r.json();if(!Array.isArray(j))return;
+live=j.filter(x=>x.document).map(x=>{const f=x.document.fields||{};return{n:(f.name||{}).stringValue||"Client",b:(f.business||{}).stringValue||"",r:Math.min(5,Math.max(1,+((f.rating||{}).integerValue||5))),t:(f.text||{}).stringValue||""}}).filter(v=>v.t);draw()}catch(e){}})();
+$("rf-n").maxLength=60;$("rf-b").maxLength=80;$("rf-t").maxLength=600;
+const E="jhoannacreativeco@gmail.com";
 $("rv-open").onclick=()=>{$("rf-msg").style.display="none";$("rf-s").disabled=false;$("rf-s").textContent="Submit review";d.showModal()};
 $("rf-x").onclick=()=>d.close();d.addEventListener("click",e=>{if(e.target===d)d.close()});
+const bad=(m,t)=>{m.textContent=t;m.style.display="block"};
 $("rform").onsubmit=async e=>{e.preventDefault();const n=$("rf-n").value.trim(),em=$("rf-e").value.trim(),t=$("rf-t").value.trim(),m=$("rf-msg"),btn=$("rf-s");
-if(!n||!t||!/^\S+@\S+\.\S+$/.test(em)){m.textContent="Please enter your name, a valid email and your review.";m.style.display="block";return}
-const b=$("rf-b").value.trim(),r=$("rf-r").value;btn.disabled=true;btn.textContent="Sending…";m.style.display="none";
-try{const x=await fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({access_key:"edc0599b-4404-49d1-bf32-1d596554dcef",subject:"New website review from "+n,from_name:"Jhoanna Creative Co. website",name:n,email:em,business:b||"(not provided)",rating:r+"/5",message:t,botcheck:""})});
-const j=await x.json().catch(()=>({}));if(!x.ok||j.success==="false"||j.success===false){const er=new Error(String(j.message||("HTTP "+x.status)));er.act=/activat/i.test(er.message);throw er}
-d.close();$("rform").reset();const o=$("toast");o.textContent="Thank you! Your review was sent.";o.classList.add("on");setTimeout(()=>o.classList.remove("on"),3000)}
-catch(_){const why=String(_&&_.message||"").replace(/[<>&"]/g,"").slice(0,120);m.innerHTML=(_&&_.act?'Almost there: the form needs a one-time activation by the site owner. For now, ':'We couldn’t send it automatically'+(why==="Failed to fetch"?' (couldn’t reach the sending service: it may be busy, or blocked by a browser extension or network)':why?' ('+why+')':'')+'. ')+'<a href="mailto:'+E+'?subject='+encodeURIComponent("Review from "+n)+"&body="+encodeURIComponent("Rating: "+r+"/5\n\n"+t+"\n\n"+n+(b?", "+b:""))+'" style="color:var(--gd)">Email it instead</a>.';m.style.display="block";btn.disabled=false;btn.textContent="Try again"}}})();
+if(!n||!t||!/^\S+@\S+\.\S+$/.test(em))return bad(m,"Please enter your name, a valid email and your review.");
+if(t.length<5)return bad(m,"Please write a little more in your review.");
+if(/(https?:|www\.)/i.test(t+n+$("rf-b").value))return bad(m,"Please remove links from your review.");
+let last=0;try{last=+localStorage.getItem("rv_t")||0}catch(_){}
+if(Date.now()-last<60000)return bad(m,"Thanks! Please wait a minute before sending another review.");
+const b=$("rf-b").value.trim(),r=+$("rf-r").value;btn.disabled=true;btn.textContent="Sending…";m.style.display="none";
+const mail=fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify({access_key:W3,subject:"New website review from "+n,from_name:"Jhoanna Creative Co. website",name:n,email:em,business:b||"(not provided)",rating:r+"/5",message:t,botcheck:""})}).then(async x=>{const j=await x.json().catch(()=>({}));return{ok:x.ok&&j.success!==false&&j.success!=="false",msg:j.message}}).catch(er=>({ok:false,msg:er.message}));
+const pub=fetch(BASE+"/reviews?key="+FK,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{name:{stringValue:n},business:{stringValue:b},rating:{integerValue:String(r)},text:{stringValue:t},createdAt:{timestampValue:new Date().toISOString()}}})}).then(x=>x.ok).catch(()=>false);
+const [a,p]=await Promise.all([mail,pub]);
+if(!a.ok&&!p){const why=String(a.msg||"").replace(/[<>&"]/g,"").slice(0,120);m.innerHTML='We couldn’t send it automatically'+(why==="Failed to fetch"?" (couldn’t reach the sending service)":why?" ("+why+")":"")+'. <a href="mailto:'+E+'?subject='+encodeURIComponent("Review from "+n)+"&body="+encodeURIComponent("Rating: "+r+"/5\n\n"+t+"\n\n"+n+(b?", "+b:""))+'" style="color:var(--gd)">Email it instead</a>.';m.style.display="block";btn.disabled=false;btn.textContent="Try again";return}
+try{localStorage.setItem("rv_t",Date.now())}catch(_){}
+if(p){live.unshift({n,b,r,t});draw();document.getElementById("reviews")&&g.firstElementChild&&g.firstElementChild.scrollIntoView({block:"nearest",behavior:"smooth"})}
+d.close();$("rform").reset();const o=$("toast");o.textContent=p?"Thank you! Your review is now live.":"Thank you! Your review was sent.";o.classList.add("on");setTimeout(()=>o.classList.remove("on"),3200)}})();
 </script></body></html>
